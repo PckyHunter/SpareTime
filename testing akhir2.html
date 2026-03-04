@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For Cii 🎀</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#1a1a2e;
+  color:white;
+  text-align:center;
+  transition:background 0.8s ease,color 0.8s ease;
+  overflow:hidden;
+}
+.container{
+  width:100%;
+  max-width:350px;
+  padding:20px;
+  position:relative;
+  min-height:320px;
+}
+.stage{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  opacity:0;
+  transform:translateY(15px);
+  transition:opacity 0.6s ease, transform 0.6s ease;
+  pointer-events:none;
+}
+.stage.active{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  border:none;
+  border-radius:25px;
+  background:#ff6fa5;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{transform:scale(1.05)}
+.sweet{background:#ffd6ec;color:#333}
+
+.pulse{animation:pulse 0.8s infinite;}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+.explode{animation:explode 0.6s ease forwards;}
+@keyframes explode{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(2.5);opacity:0}
+}
+
+.popup{margin-top:15px;font-size:14px;min-height:20px;}
+
+.card{position:relative;width:100%;height:120px;margin:20px auto 0;border-radius:15px;overflow:hidden}
+.code{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;font-weight:600;font-size:18px;pointer-events:none;z-index:1}
+canvas{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:15px;z-index:2}
+.footer-msg{margin-top:15px;font-size:14px;opacity:0;transition:0.6s}
+.footer-msg.show{opacity:1}
+
+img{width:350px;margin-top:15px;border-radius:15px}
+
+.reveal-wrapper{position:relative;display:inline-block;cursor:pointer}
+.reveal-wrapper img{
+  transition:0.6s ease;
+  filter:blur(8px) brightness(0.6);
+  transform:scale(0.95);
+}
+.reveal-wrapper.revealed img{
+  filter:blur(0) brightness(1);
+  transform:scale(1);
+}
+.tap-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  background:rgba(0,0,0,0.4);
+  border-radius:15px;
+  transition:0.5s;
+}
+.reveal-wrapper.revealed .tap-overlay{
+  opacity:0;
+  pointer-events:none;
+}
+.after-reveal{
+  opacity:0;
+  transform:translateY(10px);
+  transition:0.6s ease;
+  pointer-events:none;
+}
+.after-reveal.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+#confettiCanvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:999;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div id="stage1" class="stage active">
+  <h2>Haloo, aku mau minta tolong bentar yaa🙏🏻</h2>
+  <p style="margin-top:10px">coba kamu klik tombol bwah ini maw gak dia?</p>
+  <button onclick="nextStage(2)">Tekan aku!</button>
+</div>
+
+<div id="stage2" class="stage">
+  <p id="stage2Text1"></p>
+  <p id="stage2Text2" style="margin-top:10px"></p>
+  <button id="stage2Btn" style="display:none" onclick="nextStage(3)">
+    Mauu Mauu Mauu!!
+  </button>
+</div>
+
+<div id="stage3" class="stage">
+  <h2>🎉 Congratulation!! 🎉 <br> kamu menang Giveaway Cii 🤩</h2>
+  <p style="margin-top:10px">A-anu iseng doang jangan terlalu dipikirin 😌</p>
+  <button onclick="nextStage(4)">Aku maw Giveaway!! 🎁</button>
+</div>
+
+<div id="stage4" class="stage">
+  <h3>Special gift for you 🧚🏼‍♀️</h3>
+  <p style="margin-top:10px">Aku tau kamu suka yang ....</p>
+
+  <div class="reveal-wrapper" id="giftReveal">
+    <img src="assets/Nyawitlur.png">
+    <div class="tap-overlay">Tap to reveal 👀</div>
+  </div>
+
+  <div id="afterReveal" class="after-reveal">
+    <p style="margin-top:10px;font-weight:600">Eh bercanda 🗿🗿🗿</p>
+    <button id="tapBtn" class="pulse" onclick="tapGame()">Okay serius ini...</button>
+    <div class="popup" id="popupText"></div>
+  </div>
+</div>
+
+<div id="stage5" class="stage">
+  <h3>⚡ Scratch your real gift here ⚡</h3>
+  <div class="card">
+    <div class="code">0000-5555-8888</div>
+    <canvas id="scratch" width="350" height="120"></canvas>
+  </div>
+  <div class="footer-msg" id="finalMsg"></div>
+</div>
+
+</div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
+<audio id="boomSound" src="assets/boom.mp3" preload="auto"></audio>
+<audio id="bgMusic" src="assets/Keramatbjir.mp3" preload="auto" loop></audio>
+
+<script>
+// ===== TYPING =====
+function typeWriter(el,text,speed=35,callback=null){
+  el.innerHTML="";
+  let i=0;
+  function type(){
+    if(i<text.length){
+      el.innerHTML+=text[i]==="\n"?"<br>":text[i];
+      i++;
+      setTimeout(type,speed);
+    }else{
+      if(callback) callback();
+    }
+  }
+  type();
+}
+
+// ===== STAGE =====
+function nextStage(stage){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById('stage'+stage).classList.add('active');
+  if(stage>=3) document.body.classList.add('sweet');
+
+  if(stage===2){
+    const t1=document.getElementById("stage2Text1");
+    const t2=document.getElementById("stage2Text2");
+    const btn=document.getElementById("stage2Btn");
+
+    const text1="Ada Soundtrack & sfx nya nyala ngaaak??🤔";
+    const text2="syukurdeh kalo works, adem kan suasana lost isle ?\nkayanya emg cocok nih lagu tenang tapi nyari gospin muangkelii huff.\nsingkat aja aku mau ngasi sesuatu, mau ga??";
+
+    typeWriter(t1,text1,35,()=>{
+      setTimeout(()=>{
+        typeWriter(t2,text2,25,()=>{
+          btn.style.display="inline-block";
+        });
+      },400);
+    });
+  }
+}
+
+// ===== TAP GAME =====
+let tapCount=0;
+function tapGame(){
+  tapCount++;
+  const popup=document.getElementById("popupText");
+  if(tapCount===5) popup.innerText="bisa ga? sinyalmu jawa deh kayanya";
+  if(tapCount===10) popup.innerText="pencet lagi anjirr dibilanginn";
+  if(tapCount===15) popup.innerText="onde mandee lemas kali cik,km blm makan ke?";
+  if(tapCount===20){
+    document.getElementById("tapBtn").classList.add("explode");
+    popup.innerText="ANJAY SECRETTT 💥";
+    document.getElementById("boomSound").play();
+    createConfetti();
+    setTimeout(()=>nextStage(5),600);
+  }
+}
+
+// ===== SCRATCH =====
+const canvas=document.getElementById("scratch");
+const ctx=canvas.getContext("2d");
+ctx.fillStyle="#C0C0C0";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+let isDrawing=false;
+
+canvas.addEventListener("mousedown",()=>isDrawing=true);
+canvas.addEventListener("mouseup",()=>{isDrawing=false;checkReveal();});
+canvas.addEventListener("mousemove",scratch);
+canvas.addEventListener("touchstart",()=>isDrawing=true);
+canvas.addEventListener("touchend",()=>{isDrawing=false;checkReveal();});
+canvas.addEventListener("touchmove",scratch);
+
+function scratch(e){
+  if(!isDrawing) return;
+  const rect=canvas.getBoundingClientRect();
+  const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+  const y=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+  ctx.globalCompositeOperation="destination-out";
+  ctx.beginPath();
+  ctx.arc(x,y,20,0,Math.PI*2);
+  ctx.fill();
+}
+
+function checkReveal(){
+  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height);
+  let transparent=0;
+  for(let i=3;i<pixels.data.length;i+=4){
+    if(pixels.data[i]===0) transparent++;
+  }
+  if(transparent>pixels.data.length/10){
+    const finalMsg=document.getElementById("finalMsg");
+    if(!finalMsg.classList.contains("typed")){
+      finalMsg.classList.add("show","typed");
+      const text=`✨   Happy 21th birthday Miel !🧚🏼‍♀️🧚🏼‍♀️🧚🏼‍♀️    ✨ 
+jane aku gatau km beneran 2005 awal maret engga,tapi yah anggep aja bener wkwk 
+wishing all the best for you. Stable mentally,phisycally & financially 
+btw ini gift card robux tinggal klaim ajaa, hope u enjoy it !!`;
+      typeWriter(finalMsg,text,45);
+    }
+  }
+}
+
+// ===== CONFETTI =====
+const confettiCanvas=document.getElementById("confettiCanvas");
+const confettiCtx=confettiCanvas.getContext("2d");
+confettiCanvas.width=window.innerWidth;
+confettiCanvas.height=window.innerHeight;
+
+let confettiParticles=[];
+function createConfetti(){
+  for(let i=0;i<150;i++){
+    confettiParticles.push({
+      x:Math.random()*confettiCanvas.width,
+      y:-10,
+      size:Math.random()*6+4,
+      speed:Math.random()*3+2,
+      color:`hsl(${Math.random()*360},100%,50%)`
+    });
+  }
+  animateConfetti();
+}
+function animateConfetti(){
+  confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles.forEach(p=>{
+    p.y+=p.speed;
+    confettiCtx.fillStyle=p.color;
+    confettiCtx.fillRect(p.x,p.y,p.size,p.size);
+  });
+  confettiParticles=confettiParticles.filter(p=>p.y<confettiCanvas.height);
+  if(confettiParticles.length>0) requestAnimationFrame(animateConfetti);
+}
+
+// ===== DOM READY =====
+document.addEventListener("DOMContentLoaded",()=>{
+  const reveal=document.getElementById("giftReveal");
+  const afterReveal=document.getElementById("afterReveal");
+
+  reveal.addEventListener("click",()=>{
+    if(reveal.classList.contains("revealed")) return;
+    reveal.classList.add("revealed");
+    setTimeout(()=>afterReveal.classList.add("show"),400);
+  });
+
+  const bgMusic=document.getElementById("bgMusic");
+  bgMusic.volume=0.4;
+
+  // Play bgMusic after first interaction (browser policy)
+  document.body.addEventListener("click",()=>{
+    if(bgMusic.paused){
+      bgMusic.play().catch(()=>{});
+    }
+  },{once:true});
+
+  // PLAY click sound on ALL buttons
+  const clickSound=document.getElementById("clickSound");
+  document.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(clickSound){
+        clickSound.currentTime=0;
+        clickSound.play().catch(()=>{});
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>
